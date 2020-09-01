@@ -1,0 +1,8 @@
+name: WorldManager
+version: ${project.version}
+main: me.sul.worldmanager.WorldManager
+authors: [SuL]
+#softdepend:
+commands:
+  worldmanager:
+    permission: op.op

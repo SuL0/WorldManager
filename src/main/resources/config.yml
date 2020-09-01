@@ -1,0 +1,16 @@
+summon-mob:
+  active-worlds:
+    - "world"
+  ground-block-ids:
+    - "98"
+    - "98:1"
+    - "98:2"
+  max-companion-distance: 5
+  max-companion-num: 2
+
+  zombie:
+    min-distance: 5
+    max-distance: 50
+  skeleton:
+    min-distance: 5
+    max-distance: 50
