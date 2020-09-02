@@ -1,6 +1,7 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
 import com.google.common.base.Enums;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,14 +9,20 @@ import java.util.Random;
 
 public class AutoSummonableMobFactory {
     private static final Random random = new Random();
-    private static final Map<MobType, AutoSummonableMob> mobMap = new HashMap<>();
+    private final Map<MobType, AutoSummonableMob> mobMap = new HashMap<>();
 
-    static {
-        mobMap.put(MobType.ZOMBIE, Zombie.getInstance());
-        mobMap.put(MobType.SKELETON, Skeleton.getInstance());
+    enum MobType {
+        ZOMBIE,
+        SKELETON
     }
 
-    public static AutoSummonableMob getAutoSummonableMob(String str) {
+    public AutoSummonableMobFactory(FileConfiguration config, String parentNode) {
+        parentNode = parentNode + ".mobtype";
+        mobMap.put(MobType.ZOMBIE, new Zombie(config, parentNode));
+        mobMap.put(MobType.SKELETON, new Skeleton(config, parentNode));
+    }
+
+    public AutoSummonableMob getAutoSummonableMob(String str) {
         if (!Enums.getIfPresent(AutoSummonableMobFactory.MobType.class, str).isPresent()) return null;
         MobType mobType = MobType.valueOf(str);
         if (mobMap.get(mobType) != null) {
@@ -23,17 +30,16 @@ public class AutoSummonableMobFactory {
         }
         return null;
     }
-    public static AutoSummonableMob getRandomAutoSummonableMob() {
-        double rand = random.nextInt(100) + 1;
-        if (rand <= 50) {
-            return mobMap.get(MobType.ZOMBIE);
-        } else {
-            return mobMap.get(MobType.SKELETON);
+    public AutoSummonableMob getRandomAutoSummonableMob() {
+        double rand = (random.nextInt(10000) + 1 ) / 10D;
+        double chance = 0;
+        for (AutoSummonableMob mob : mobMap.values()) {
+            chance += mob.getSpawnChance();
+            if (chance > 100) break;
+            if (chance <= rand) {
+                return mob;
+            }
         }
-    }
-
-    enum MobType {
-        ZOMBIE,
-        SKELETON
+        return mobMap.get(MobType.ZOMBIE);
     }
 }

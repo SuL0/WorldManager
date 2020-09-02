@@ -1,37 +1,30 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
-import me.sul.worldmanager.WorldManager;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.plugin.Plugin;
 
-public class Zombie extends AutoSummonableMob {
-    private static Zombie instance;
+public class Zombie implements AutoSummonableMob {
+    private final int SPAWN_CHANGE;
+    private final int MIN_DISTANCE;
+    private final int MAX_DISTANCE;
 
-    private final int minDistance;
-    private final int maxDistance;
-
-    public Zombie() {
-        Plugin plugin = WorldManager.getInstance();
-        int minDistance = plugin.getConfig().getInt("summon-mob." + getClass().getSimpleName().toLowerCase() + ".min-distance");
-        int maxDistance = plugin.getConfig().getInt("summon-mob." + getClass().getSimpleName().toLowerCase() + ".max-distance");
-        this.minDistance = minDistance;
-        this.maxDistance = maxDistance;
+    public Zombie(FileConfiguration config, String parentNode) {
+        parentNode = parentNode + ".zombie";
+        SPAWN_CHANGE = config.getInt(parentNode + ".spawn-chance");
+        MIN_DISTANCE = config.getInt(parentNode + ".min-distance");
+        MAX_DISTANCE = config.getInt(parentNode + ".max-distance");
+    }
+    
+    @Override
+    public void summonMob(Location loc) {
+        loc.getWorld().spawnEntity(loc, EntityType.ZOMBIE);
     }
 
     @Override
-    public void summonMobAroundLoc(Location origLoc) {
-        Location summonLoc = getNearAppropriateLoc(origLoc, minDistance, maxDistance);
-        if (summonLoc != null) {
-            summonLoc.getWorld().spawnEntity(summonLoc, EntityType.ZOMBIE);
-            // 소환 모션 코드
-        }
-    }
-
-    public static Zombie getInstance() {  // static에서 객체 생성하면, plugin을 받아올 수 없음.
-        if (instance == null) {
-            instance = new Zombie();
-        }
-        return instance;
-    }
+    public int getSpawnChance() { return SPAWN_CHANGE; }
+    @Override
+    public int getMinDistance() { return MIN_DISTANCE; }
+    @Override
+    public int getMaxDistance() { return MAX_DISTANCE; }
 }
