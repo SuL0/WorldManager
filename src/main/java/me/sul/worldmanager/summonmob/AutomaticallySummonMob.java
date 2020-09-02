@@ -5,6 +5,7 @@ import me.sul.worldmanager.summonmob.mobtype.AutoSummonableMobFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +22,10 @@ public class AutomaticallySummonMob {
     private final Plugin plugin;
     private final Random random = new Random();
 
+    private final AutoSummonableMobFactory autoSummonableMobFactory;
+    private final MobSummoner mobSummoner;
+
+
     // config
     private final List<World> activeWorlds = new ArrayList<>();
     private final int maxCompanionDistance;
@@ -31,13 +36,22 @@ public class AutomaticallySummonMob {
         this.plugin = WorldManager.getInstance();
 
         plugin.saveDefaultConfig(); // config가 없을 시 생성
-        activeWorlds.addAll(plugin.getConfig().getStringList("summon-mob.active-worlds").stream().map(Bukkit::getWorld).collect(Collectors.toList()));
-        maxCompanionDistance = plugin.getConfig().getInt("summon-mob.max-companion-distance");
-        maxCompanionNum = plugin.getConfig().getInt("summon-mob.max-companion-num");
+        FileConfiguration config = plugin.getConfig();
+        String parentNode = "summon-mob";
+        activeWorlds.addAll(config.getStringList(parentNode + ".active-worlds").stream().map(Bukkit::getWorld).collect(Collectors.toList()));
+        maxCompanionDistance = config.getInt(parentNode + ".max-companion-distance");
+        maxCompanionNum = config.getInt(parentNode + ".max-companion-num");
+
+        autoSummonableMobFactory = new AutoSummonableMobFactory(config, parentNode);
+        mobSummoner = new MobSummoner(config, parentNode);
+
         if (activeWorlds.size() >= 1) {
             registerSpawnZombieScheduler();
         }
     }
+
+
+
 
     private void registerSpawnZombieScheduler() {
         new BukkitRunnable() {
@@ -47,7 +61,7 @@ public class AutomaticallySummonMob {
                 List<Location> centerPoints = getCenterPointsToSummonMobs();
                 if (centerPoints == null || centerPoints.size() == 0) return;
                 for (Location centerPoint : centerPoints) {
-                    AutoSummonableMobFactory.getRandomAutoSummonableMob().summonMobAroundLoc(centerPoint);
+                    mobSummoner.summonMob(autoSummonableMobFactory.getRandomAutoSummonableMob(), centerPoint);
                 }
             }
         }.runTaskTimer(plugin, 0, 50 + random.nextInt(50));
@@ -57,9 +71,11 @@ public class AutomaticallySummonMob {
     
     private List<Location> getCenterPointsToSummonMobs() {
         List<Player> players = new ArrayList<>();
-        for(World world : activeWorlds) {
+        for (World world : activeWorlds) {
+            if (world.getPlayers() == null) continue;
             players.addAll(world.getPlayers());
         }
+        if (players.size() == 0) return null;
         return removeCompanionFromList(players, maxCompanionDistance, maxCompanionNum).stream().map(Entity::getLocation).collect(Collectors.toList());
     }
 

@@ -1,16 +1,24 @@
 summon-mob:
   active-worlds:
-    - "world"
-  ground-block-ids:
-    - "98"
-    - "98:1"
-    - "98:2"
+    - "warn"
   max-companion-distance: 5
   max-companion-num: 2
 
-  zombie:
-    min-distance: 5
-    max-distance: 50
-  skeleton:
-    min-distance: 5
-    max-distance: 50
+  summoner:
+    ground-block-ids:
+      - "98"
+      - "98:1"
+      - "98:2"
+    lowest-ground-height: 50
+    highest-ground-height: 100
+
+    # chance >= 0.01
+    mobtype:
+      zombie:  # default
+        spawn-chance: 50
+        min-distance: 5
+        max-distance: 50
+      skeleton:
+        spawn-chance: 50
+        min-distance: 5
+        max-distance: 50
