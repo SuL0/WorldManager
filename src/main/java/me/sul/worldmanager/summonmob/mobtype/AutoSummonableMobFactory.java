@@ -1,6 +1,7 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
 import com.google.common.base.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
@@ -31,12 +32,12 @@ public class AutoSummonableMobFactory {
         return null;
     }
     public AutoSummonableMob getRandomAutoSummonableMob() {
-        double rand = (random.nextInt(10000) + 1 ) / 10D;
+        double rand = (random.nextInt(10000) + 1 ) / 100D;
         double chance = 0;
         for (AutoSummonableMob mob : mobMap.values()) {
             chance += mob.getSpawnChance();
             if (chance > 100) break;
-            if (chance <= rand) {
+            if (chance >= rand) {
                 return mob;
             }
         }

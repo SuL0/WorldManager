@@ -16,9 +16,9 @@ summon-mob:
     mobtype:
       zombie:  # default
         spawn-chance: 50
-        min-distance: 5
+        min-distance: 7
         max-distance: 50
       skeleton:
         spawn-chance: 50
-        min-distance: 5
+        min-distance: 7
         max-distance: 50
