@@ -17,7 +17,7 @@ public class AutoSummonableMobFactory {
     }
 
     public AutoSummonableMobFactory(FileConfiguration config, String parentNode) {
-        parentNode = parentNode + ".mobtype";
+        parentNode = parentNode + ".summoner.mobtype";
         mobMap.put(MobType.ZOMBIE, new Zombie(config, parentNode));
         mobMap.put(MobType.SKELETON, new Skeleton(config, parentNode));
     }
