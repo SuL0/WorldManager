@@ -18,7 +18,7 @@ public class Skeleton implements AutoSummonableMob {
 
     @Override
     public void summonMob(Location loc) {
-        loc.getWorld().spawnEntity(loc, EntityType.ZOMBIE);
+        loc.getWorld().spawnEntity(loc, EntityType.SKELETON);
     }
 
     @Override

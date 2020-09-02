@@ -1,8 +1,8 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
+import me.sul.customentity.entity.EntityZombie;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 
 public class Zombie implements AutoSummonableMob {
     private final double SPAWN_CHANGE;
@@ -18,7 +18,7 @@ public class Zombie implements AutoSummonableMob {
 
     @Override
     public void summonMob(Location loc) {
-        loc.getWorld().spawnEntity(loc, EntityType.ZOMBIE);
+        new EntityZombie(loc);
     }
 
     @Override
