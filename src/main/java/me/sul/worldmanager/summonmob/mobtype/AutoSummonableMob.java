@@ -4,7 +4,7 @@ import org.bukkit.Location;
 
 public interface AutoSummonableMob {
     void summonMob(Location loc);
-    int getSpawnChance();
+    double getSpawnChance();
     int getMinDistance();
     int getMaxDistance();
 }
