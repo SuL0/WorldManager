@@ -3,6 +3,7 @@ summon-mob:
     - "warn"
   max-companion-distance: 10
   max-companion-num: 2
+  mob-spawn-period: # tick
 
   summoner:
     ground-block-ids:

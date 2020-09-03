@@ -1,8 +1,12 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
 import me.sul.customentity.entity.EntityZombie;
+import me.sul.worldmanager.WorldManager;
+import me.sul.worldmanager.summonmob.MobCleaner;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class Zombie implements AutoSummonableMob {
     private final double SPAWN_CHANGE;
@@ -18,7 +22,8 @@ public class Zombie implements AutoSummonableMob {
 
     @Override
     public void summonMob(Location loc) {
-        new EntityZombie(loc);
+        Entity entity = new EntityZombie(loc).getBukkitEntity();
+        entity.setMetadata(MobCleaner.CLEANING_TARGET_METAKEY, new FixedMetadataValue(WorldManager.getInstance(), true));
     }
 
     @Override

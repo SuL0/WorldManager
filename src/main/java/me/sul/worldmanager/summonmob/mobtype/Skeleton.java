@@ -1,8 +1,12 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
+import me.sul.worldmanager.WorldManager;
+import me.sul.worldmanager.summonmob.MobCleaner;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class Skeleton implements AutoSummonableMob {
     private final double SPAWN_CHANGE;
@@ -18,7 +22,8 @@ public class Skeleton implements AutoSummonableMob {
 
     @Override
     public void summonMob(Location loc) {
-        loc.getWorld().spawnEntity(loc, EntityType.SKELETON);
+        Entity entity = loc.getWorld().spawnEntity(loc, EntityType.SKELETON);
+        entity.setMetadata(MobCleaner.CLEANING_TARGET_METAKEY, new FixedMetadataValue(WorldManager.getInstance(), true));
     }
 
     @Override
