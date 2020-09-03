@@ -11,10 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // TODO: 플레이어 시선 앞쪽에 스폰될 확률을 50%정도로
@@ -38,16 +35,19 @@ public class AutomaticallySummonMob {
         plugin.saveDefaultConfig(); // config가 없을 시 생성
         FileConfiguration config = plugin.getConfig();
         String parentNode = "summon-mob";
-        activeWorlds.addAll(config.getStringList(parentNode + ".active-worlds").stream().map(Bukkit::getWorld).collect(Collectors.toList()));
         maxCompanionDistance = config.getInt(parentNode + ".max-companion-distance");
         maxCompanionNum = config.getInt(parentNode + ".max-companion-num");
 
         autoSummonableMobFactory = new AutoSummonableMobFactory(config, parentNode);
         mobSummoner = new MobSummoner(config, parentNode);
 
-        if (activeWorlds.size() >= 1) {
-            registerSpawnZombieScheduler();
-        }
+        // 월드는 1틱 뒤에 불러와야 함
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            activeWorlds.addAll(config.getStringList(parentNode + ".active-worlds").stream().map(Bukkit::getWorld).filter(Objects::nonNull).collect(Collectors.toList()));
+            if (activeWorlds.size() >= 1) {
+                registerSpawnZombieScheduler();
+            }
+        }, 1L);
     }
 
 
