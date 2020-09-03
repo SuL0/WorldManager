@@ -35,8 +35,10 @@ public class MobSummoner {
 
     public Location getNearAppropriateLoc(Location origLoc, int minDistance, int maxDistance) {
         for (int retry=0; retry<10; retry++) {
-            int randX = (int) origLoc.getX() + Math.round(random.nextBoolean() ? 1 : -1 * (minDistance + random.nextInt(maxDistance)));
-            int randZ = (int) origLoc.getZ() + Math.round(random.nextBoolean() ? 1 : -1 * (minDistance + random.nextInt(maxDistance)));
+            int randX = (int) Math.round(origLoc.getX());
+            int randZ = (int) Math.round(origLoc.getZ());
+            randX += (random.nextBoolean() ? 1 : -1) * (minDistance + random.nextInt(maxDistance-minDistance) + 1);
+            randZ += (random.nextBoolean() ? 1 : -1) * (minDistance + random.nextInt(maxDistance-minDistance) + 1);
             Location groundLoc = getGroundLoc(origLoc.getWorld(), randX, randZ);
             if (groundLoc != null) {
                 return groundLoc;

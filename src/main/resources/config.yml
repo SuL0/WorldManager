@@ -1,7 +1,7 @@
 summon-mob:
   active-worlds:
     - "warn"
-  max-companion-distance: 5
+  max-companion-distance: 10
   max-companion-num: 2
 
   summoner:
@@ -17,8 +17,8 @@ summon-mob:
       zombie:  # default
         spawn-chance: 50
         min-distance: 7
-        max-distance: 50
+        max-distance: 40
       skeleton:
         spawn-chance: 50
         min-distance: 7
-        max-distance: 50
+        max-distance: 40
