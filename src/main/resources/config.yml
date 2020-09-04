@@ -7,8 +7,8 @@ summon-mob:
   moblimit-radius: 40
   moblimit-max-num: 7
 
-  summoning-mob-period: 20 # seconds
-  cleaning-mob-period: 60 # seconds
+  summoning-mob-period: 15 # seconds
+  cleaning-mob-period: 40 # seconds
 
   summoner:
     ground-block-ids:

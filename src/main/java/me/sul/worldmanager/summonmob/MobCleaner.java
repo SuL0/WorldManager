@@ -18,13 +18,13 @@ public class MobCleaner implements Listener {
     private final Plugin plugin;
 
     private final List<World> activeWorlds = new ArrayList<>();
-    private final int CLEAN_MOB_PERIOD;
+    private final int CLEANING_MOB_PERIOD;
 
 
     public MobCleaner(Plugin plugin, String parentNode, List<World> activeWorlds) {
         this.plugin = plugin;
         this.activeWorlds.addAll(activeWorlds);
-        this.CLEAN_MOB_PERIOD = plugin.getConfig().getInt(parentNode + ".cleaning-mob-period") * 20;
+        this.CLEANING_MOB_PERIOD = plugin.getConfig().getInt(parentNode + ".cleaning-mob-period") * 20;
 
         registerCleanUselessMobScheduler();
     }
@@ -34,7 +34,7 @@ public class MobCleaner implements Listener {
             public void run() {
                 cleanAutoSummonableMob(false);
             }
-        }.runTaskTimer(plugin, 0, CLEAN_MOB_PERIOD);
+        }.runTaskTimer(plugin, 0, CLEANING_MOB_PERIOD);
     }
 
     @EventHandler

@@ -3,6 +3,7 @@ package me.sul.worldmanager.summonmob;
 import me.sul.worldmanager.WorldManager;
 import me.sul.worldmanager.summonmob.mobtype.AutoSummonableMobFactory;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,9 +28,11 @@ public class AutomaticallySummonMob {
 
     // config
     private final List<World> activeWorlds = new ArrayList<>();
-    private final int mobSpawnPeriod;
+    private final int summoningMobPeriod;
     private final int maxCompanionDistance;
     private final int maxCompanionNum;
+    private final int mobLimit_radius;
+    private final int mobLimit_maxNum;
 
 
     public AutomaticallySummonMob() {
@@ -38,9 +41,11 @@ public class AutomaticallySummonMob {
         plugin.saveDefaultConfig(); // config가 없을 시 생성
         FileConfiguration config = plugin.getConfig();
         String parentNode = "summon-mob";
-        mobSpawnPeriod = config.getInt(parentNode + ".mob-spawn-period");
+        summoningMobPeriod = config.getInt(parentNode + ".summoning-mob-period") * 20;
         maxCompanionDistance = config.getInt(parentNode + ".max-companion-distance");
         maxCompanionNum = config.getInt(parentNode + ".max-companion-num");
+        mobLimit_radius = config.getInt(parentNode + ".moblimit-radius");
+        mobLimit_maxNum = config.getInt(parentNode + ".moblimit-max-num");
 
         autoSummonableMobFactory = new AutoSummonableMobFactory(config, parentNode);
         mobSummoner = new MobSummoner(config, parentNode);
@@ -50,11 +55,10 @@ public class AutomaticallySummonMob {
             activeWorlds.addAll(config.getStringList(parentNode + ".active-worlds").stream().map(Bukkit::getWorld).filter(Objects::nonNull).collect(Collectors.toList()));
             if (activeWorlds.size() >= 1) {
                 registerSummonMobScheduler();
-                new MobCleaner(plugin, activeWorlds);
+                new MobCleaner(plugin, parentNode, activeWorlds);
             }
         }, 1L);
     }
-
 
 
 
@@ -69,7 +73,7 @@ public class AutomaticallySummonMob {
                     mobSummoner.summonMob(autoSummonableMobFactory.getRandomAutoSummonableMob(), centerPoint);
                 }
             }
-        }.runTaskTimer(plugin, mobSpawnPeriod, mobSpawnPeriod);
+        }.runTaskTimer(plugin, summoningMobPeriod, summoningMobPeriod);
     }
 
 
@@ -77,25 +81,36 @@ public class AutomaticallySummonMob {
         List<Player> players = new ArrayList<>();
         for (World world : activeWorlds) {
             if (world.getPlayers() == null) continue;
-            players.addAll(world.getPlayers());
+            players.addAll(world.getPlayers().stream().filter(p -> p.getGameMode() == GameMode.SURVIVAL).collect(Collectors.toList()));
         }
         if (players.size() == 0) return null;
-        return removeCompanionFromList(players, maxCompanionDistance, maxCompanionNum).stream().map(Entity::getLocation).collect(Collectors.toList());
+        removePlayerExceededMobLimit(players, mobLimit_radius, mobLimit_maxNum);
+        removeCompanion(players, maxCompanionDistance, maxCompanionNum);
+        return players.stream().map(Entity::getLocation).collect(Collectors.toList());
     }
 
-    private List<Player> removeCompanionFromList(List<Player> playerList, int maxDistance, int maxCompanionNum) {
+    private void removePlayerExceededMobLimit(List<Player> playerList, int radius, int maxNum) {
+        for (int i=0; i<playerList.size(); i++) {
+            Player loopPlayer = playerList.get(i);
+            if (loopPlayer.getNearbyEntities(radius, 1000, radius).stream().filter(e -> e.hasMetadata(MobSummoner.AUTO_SUMMONED_MOB_METAKEY)).count() >= maxNum) {
+                playerList.remove(i--); // 인덱스가 앞으로 당겨지니까, 1을 빼줘야 함
+            }
+        }
+    }
+
+    private void removeCompanion(List<Player> playerList, int maxDistance, int maxCompanionNum) {
         Collections.shuffle(playerList);
 
         for (int i=0; i<playerList.size(); i++) {
             Player loopPlayer = playerList.get(i);
             int companionNum = 1;
-            for (Entity nearEntity : loopPlayer.getNearbyEntities(maxDistance, maxDistance, maxDistance).stream().filter(nearEntity -> (nearEntity instanceof Player && playerList.contains(nearEntity))).collect(Collectors.toList())) {
-                playerList.remove(nearEntity); //NOTE: Suspicious call ? ? ?  // 무조건 nearEntity는 playerList에서 loopPlayer보다 뒤에 있음.
+            // NOTE: getNearbyEntities는 자신 포함인가? 그럼 아래 코드 자신은 제외하도록 수정해야하는데
+            for (Entity nearPlayer : loopPlayer.getNearbyEntities(maxDistance, maxDistance, maxDistance).stream().filter(nearEntity -> (nearEntity instanceof Player && playerList.contains(nearEntity))).collect(Collectors.toList())) {
+                playerList.remove(nearPlayer); //NOTE: Suspicious call ? ? ?  // 무조건 nearEntity는 playerList에서 loopPlayer보다 뒤에 있음.
                 if (++companionNum >= maxCompanionNum) {
                     break;
                 }
             }
         }
-        return playerList;
     }
 }
