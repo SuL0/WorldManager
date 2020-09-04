@@ -3,7 +3,12 @@ summon-mob:
     - "warn"
   max-companion-distance: 10
   max-companion-num: 2
-  mob-spawn-period: # tick
+
+  moblimit-radius: 40
+  moblimit-max-num: 7
+
+  summoning-mob-period: 20 # seconds
+  cleaning-mob-period: 60 # seconds
 
   summoner:
     ground-block-ids:
@@ -16,10 +21,10 @@ summon-mob:
     # chance >= 0.01
     mobtype:
       zombie:  # default
-        spawn-chance: 50
+        summoning-chance: 50
         min-distance: 7
         max-distance: 40
       skeleton:
-        spawn-chance: 50
+        summoning-chance: 50
         min-distance: 7
         max-distance: 40

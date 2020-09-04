@@ -1,33 +1,30 @@
 package me.sul.worldmanager.summonmob.mobtype;
 
-import me.sul.worldmanager.WorldManager;
-import me.sul.worldmanager.summonmob.MobCleaner;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class Skeleton implements AutoSummonableMob {
-    private final double SPAWN_CHANGE;
+    private final double SUMMONING_CHANCE;
     private final int MIN_DISTANCE;
     private final int MAX_DISTANCE;
 
     public Skeleton(FileConfiguration config, String parentNode) {
         parentNode = parentNode + ".skeleton";
-        SPAWN_CHANGE = config.getDouble(parentNode + ".spawn-chance");
+        SUMMONING_CHANCE = config.getDouble(parentNode + ".summoning-chance");
         MIN_DISTANCE = config.getInt(parentNode + ".min-distance");
         MAX_DISTANCE = config.getInt(parentNode + ".max-distance");
     }
 
     @Override
-    public void summonMob(Location loc) {
+    public Entity summonMob(Location loc) {
         Entity entity = loc.getWorld().spawnEntity(loc, EntityType.SKELETON);
-        entity.setMetadata(MobCleaner.CLEANING_TARGET_METAKEY, new FixedMetadataValue(WorldManager.getInstance(), true));
+        return entity;
     }
 
     @Override
-    public double getSpawnChance() { return SPAWN_CHANGE; }
+    public double getSpawnChance() { return SUMMONING_CHANCE; }
     @Override
     public int getMinDistance() { return MIN_DISTANCE; }
     @Override

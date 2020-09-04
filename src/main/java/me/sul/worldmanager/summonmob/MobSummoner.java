@@ -1,11 +1,14 @@
 package me.sul.worldmanager.summonmob;
 
+import me.sul.worldmanager.WorldManager;
 import me.sul.worldmanager.summonmob.mobtype.AutoSummonableMob;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,8 @@ public class MobSummoner {
     private final List<String> groundBlockIds = new ArrayList<>();
     private final int LOWEST_GROUND_HEIGHT;
     private final int HIGHEST_GROUND_HEIGHT;
+
+    public static final String AUTO_SUMMONED_MOB_METAKEY = "WorldManager.AutoSummonedMob";
 
     public MobSummoner(FileConfiguration config, String parentNode) {
         parentNode = parentNode + ".summoner";
@@ -30,7 +35,8 @@ public class MobSummoner {
         int maxDistance = mob.getMaxDistance();
         Location summonLoc = getNearAppropriateLoc(centerPoint, minDistance, maxDistance);
         if (summonLoc == null) return;
-        mob.summonMob(summonLoc);
+        Entity summonedMob = mob.summonMob(summonLoc);
+        summonedMob.setMetadata(AUTO_SUMMONED_MOB_METAKEY, new FixedMetadataValue(WorldManager.getInstance(), true));
     }
 
     public Location getNearAppropriateLoc(Location origLoc, int minDistance, int maxDistance) {
