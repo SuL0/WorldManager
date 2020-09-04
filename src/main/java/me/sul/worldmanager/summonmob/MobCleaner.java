@@ -17,14 +17,15 @@ import java.util.List;
 public class MobCleaner implements Listener {
     private final Plugin plugin;
 
-    private final List<World> activeWorlds = new ArrayList<World>();
-    private static final int CLEAN_MOB_PERIOD = 60 * 20;
-    public static final String CLEANING_TARGET_METAKEY = "WorldManager.CleaningTarget";
+    private final List<World> activeWorlds = new ArrayList<>();
+    private final int CLEAN_MOB_PERIOD;
 
 
-    public MobCleaner(Plugin plugin, List<World> activeWorlds) {
+    public MobCleaner(Plugin plugin, String parentNode, List<World> activeWorlds) {
         this.plugin = plugin;
         this.activeWorlds.addAll(activeWorlds);
+        this.CLEAN_MOB_PERIOD = plugin.getConfig().getInt(parentNode + ".cleaning-mob-period") * 20;
+
         registerCleanUselessMobScheduler();
     }
     private void registerCleanUselessMobScheduler() {
@@ -45,13 +46,12 @@ public class MobCleaner implements Listener {
         for (World world : activeWorlds) {
             // mobType은 Skeleton, Zombie여야 함
             for (Entity entity : world.getEntities()) {
-                if (entity instanceof Monster && entity.hasMetadata(CLEANING_TARGET_METAKEY)) {
-                    if (!includeUsefulMobs || ((EntityMonster) ((CraftEntity)entity).getHandle()).getGoalTarget() == null) {
+                if (entity instanceof Monster && entity.hasMetadata(MobSummoner.AUTO_SUMMONED_MOB_METAKEY)) {
+                    if (includeUsefulMobs || ((EntityMonster) ((CraftEntity)entity).getHandle()).getGoalTarget() == null) {
                         entity.remove();
                     }
                 }
             }
-            world.getEntities().stream().filter(e -> e instanceof Monster && ((EntityMonster) ((CraftEntity)e).getHandle()).getGoalTarget() == null).forEach(Entity::remove);
         }
     }
 }
