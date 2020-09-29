@@ -21,7 +21,7 @@ object TimeAndWeatherManager : Listener {
         Bukkit.getScheduler().runTaskTimer(WorldManager.instance, {
             for (world in Bukkit.getServer().worlds) {
                 val time = world.time
-                if (!(time in 2000..10000)) {
+                if (time !in 2000..10000) {
                     world.time = 2000
                 }
                 if (world.hasStorm()) world.setStorm(false)

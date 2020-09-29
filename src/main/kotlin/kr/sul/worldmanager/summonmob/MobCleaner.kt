@@ -9,7 +9,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.*
 
 class MobCleaner(private val plugin: Plugin, parentNode: String, activeWorldsParam: List<World>) : Listener {
     companion object {
@@ -35,11 +34,11 @@ class MobCleaner(private val plugin: Plugin, parentNode: String, activeWorldsPar
         cleanAutoSummonableMob(true)
     }
 
-    private fun cleanAutoSummonableMob(includeUsefulMobs: Boolean) {
+    private fun cleanAutoSummonableMob(toAllMobs: Boolean) {
         for (world in activeWorlds) {
             world.entities.stream()
-                    .filter { it is Monster && it.hasMetadata(MobSummoner.AUTO_SUMMONED_MOB_METAKEY)
-                                && includeUsefulMobs || ((it as CraftEntity).handle as EntityMonster).goalTarget == null}
+                    .filter { it is Monster && it.hasMetadata(MobSummoner.AUTO_SUMMONED_MOB_METAKEY) }
+                    .filter { toAllMobs || ((it as CraftEntity).handle as EntityMonster).goalTarget == null }
                     .forEach { it.remove() }
         }
     }

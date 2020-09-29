@@ -1,7 +1,6 @@
 package kr.sul.worldmanager.setting
 
 import kr.sul.servercore.util.ObjectInitializer
-import kr.sul.worldmanager.WorldManager
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
